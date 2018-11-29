@@ -43,30 +43,83 @@ AirController::doWork()
 			std::list<Flight*> flights = Airport::getInstance()->getFlights();
 			std::list<Flight*>::iterator it;
 
-			Position pos0(3500.0, 0.0, 100.0);
-			Position pos1(1500.0, 0.0, 50.0);
-			Position pos2(200.0, 0.0, 25.0);
-			Position pos3(-750.0, 0.0, 25.0);
+			Position pos_aterrizaje_0(3500.0, 0.0, 100.0);
+			Position pos_aterrizaje_1(1500.0, 0.0, 50.0);
+			Position pos_aterrizaje_2(200.0, 0.0, 25.0);
+			Position pos_aterrizaje_3(-750.0, 0.0, 25.0);
 
-			Route r0, r1, r2, r3;
+			Position pos_circuito_0(5000.0, -6000.0, 1000.0);
+			Position pos_circuito_1(5000.0, -16000.0, 1000.0);
+			Position pos_circuito_2(-5000.0, -16000.0, 1000.0);
+			Position pos_circuito_3(-5000.0, -6000.0, 1000.0);
 
-			r0.pos = pos0;
-			r0.speed = 500.0;
-			r1.pos = pos1;
-			r1.speed = 100.0;
-			r2.pos = pos2;
-			r2.speed = 19.0;
-			r3.pos = pos3;
-			r3.speed = 15.0;
+			Position pos_circuito_4(5000.0, 6000.0, 1000.0);
+			Position pos_circuito_5(5000.0, 16000.0, 1000.0);
+			Position pos_circuito_6(-5000.0, 16000.0, 1000.0);
+			Position pos_circuito_7(-5000.0, 6000.0, 1000.0);
+
+			Route ra0, ra1, ra2, ra3;
+			Route rc0, rc1, rc2, rc3;
+			Route rc4, rc5, rc6, rc7;
+
+			ra0.pos = pos_aterrizaje_0;
+			ra0.speed = 200.0;
+			ra1.pos = pos_aterrizaje_1;
+			ra1.speed = 100.0;
+			ra2.pos = pos_aterrizaje_2;
+			ra2.speed = 19.0;
+			ra3.pos = pos_aterrizaje_3;
+			ra3.speed = 15.0;
+
+			rc0.pos = pos_circuito_0;
+			rc0.speed = 300.0;
+			rc1.pos = pos_circuito_1;
+			rc1.speed = 300.0;
+			rc2.pos = pos_circuito_2;
+			rc2.speed = 300.0;
+			rc3.pos = pos_circuito_3;
+			rc3.speed = 300.0;
+
+			rc4.pos = pos_circuito_4;
+			rc4.speed = 300.0;
+			rc5.pos = pos_circuito_5;
+			rc5.speed = 300.0;
+			rc6.pos = pos_circuito_6;
+			rc6.speed = 300.0;
+			rc7.pos = pos_circuito_7;
+			rc7.speed = 300.0;
+
+			if(!Airport::getInstance()->is_booked_landing())
+			{
+				Flight* primero = *(flights.begin());
+
+				primero->getRoute()->clear();
+			}
 
 			for(it = flights.begin(); it!=flights.end(); ++it)
 			{
 				if((*it)->getRoute()->empty())
+
 				{
-					(*it)->getRoute()->push_back(r3);
-					(*it)->getRoute()->push_front(r2);
-					(*it)->getRoute()->push_front(r1);
-					(*it)->getRoute()->push_front(r0);
+					if(Airport::getInstance()->is_booked_landing()&& (*it)->getPosition().get_y()<0){
+
+						(*it)->getRoute()->push_back(rc0);
+						(*it)->getRoute()->push_back(rc1);
+						(*it)->getRoute()->push_back(rc2);
+						(*it)->getRoute()->push_back(rc3);
+					}else if(Airport::getInstance()->is_booked_landing()&& (*it)->getPosition().get_y()>=0){
+
+						(*it)->getRoute()->push_back(rc4);
+						(*it)->getRoute()->push_back(rc5);
+						(*it)->getRoute()->push_back(rc6);
+						(*it)->getRoute()->push_back(rc7);
+					}else{
+						Airport::getInstance()->book_landing();
+						(*it)->getRoute()->push_back(ra0);
+						(*it)->getRoute()->push_back(ra1);
+						(*it)->getRoute()->push_back(ra2);
+						(*it)->getRoute()->push_back(ra3);
+					}
 				}
 			}
 
